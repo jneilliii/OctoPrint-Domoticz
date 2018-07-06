@@ -1,0 +1,21 @@
+<!-- ko foreach: settings.settings.plugins.domoticz.arrSmartplugs -->
+<a href=#" data-bind="click: $root.toggleRelay,visible: $root.loginState.loggedIn(),attr: {title: $data.label}" style="display: none;float: left;"><i class="icon" data-bind="css: [currentState(), icon(),(($root.processing().indexOf(ip()) > -1) ? 'icon-spin' : '')].join(' ')" aria-hidden="true"></i><div class="domoticz_label" data-bind="text: $data.label"></div></a>
+<!-- /ko -->
+<div id="DomoticzWarning" data-bind="with: selectedPlug" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>OctoPrint-Domoticz</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+            <!--ko text: ip()--><!--/ko--> is currently <!--ko text: currentState()--><!--/ko-->. 
+        </p>
+        <p>
+            {{ _('Are you sure you want to proceed?') }}
+        </p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal" aria-hidden="true" data-bind="click: $root.cancelClick">{{ _('Cancel') }}</a>
+        <a href="#" class="btn btn-danger" data-bind="click: $root.turnOff">{{ _('Proceed') }}</a>
+    </div>
+</div>
