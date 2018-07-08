@@ -11,6 +11,7 @@ import os
 import re
 import urllib2
 import threading
+import base64
 
 class domoticzPlugin(octoprint.plugin.SettingsPlugin,
                             octoprint.plugin.AssetPlugin,
@@ -85,12 +86,15 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 		
 	##~~ SimpleApiPlugin mixin
 	
-	def turn_on(self, plugip, plugidx, username="admin", password=""):
+	def turn_on(self, plugip, plugidx, username="", password=""):
 		if self._settings.get(['singleRelay']):
 			plugidx = ''
 		self._domoticz_logger.debug("Turning on %s index %s." % (plugip, plugidx))
 		try:
-			webresponse = urllib2.urlopen("http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=On").read()
+			strURL = "http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=On"
+			if username != "":
+				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
+			webresponse = urllib2.urlopen(strURL).read()
 			response = json.loads(webresponse)
 			chk = response["status"]
 		except:			
@@ -105,10 +109,13 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			self._domoticz_logger.debug(response)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(currentState="unknown",ip=plugip,idx=plugidx))
 	
-	def turn_off(self, plugip, plugidx, username="admin", password=""):
+	def turn_off(self, plugip, plugidx, username="", password=""):
 		self._domoticz_logger.debug("Turning off %s index %s." % (plugip, plugidx))
 		try:
-			webresponse = urllib2.urlopen("http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=Off").read()
+			strURL = "http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=Off"
+			if username != "":
+				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
+			webresponse = urllib2.urlopen(strURL).read()
 			response = json.loads(webresponse)
 			chk = response["status"]
 		except:
@@ -123,11 +130,14 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			self._domoticz_logger.debug(response)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(currentState="unknown",ip=plugip,idx=plugidx))
 		
-	def check_status(self, plugip, plugidx, username="admin", password=""):
+	def check_status(self, plugip, plugidx, username="", password=""):
 		self._domoticz_logger.debug("Checking status of %s index %s." % (plugip, plugidx))
 		if plugip != "":
 			try:
-				webresponse = urllib2.urlopen("http://" + plugip + "/json.htm?type=devices&rid=" + str(plugidx)).read()
+				strURL = "http://" + plugip + "/json.htm?type=devices&rid=" + str(plugidx)
+				if username != "":
+					strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))				
+				webresponse = urllib2.urlopen(strURL).read()
 				self._domoticz_logger.debug("%s index %s response: %s" % (plugip, plugidx, webresponse))
 				response = json.loads(webresponse)
 				chk = response["result"][0]["Status"]

@@ -26,7 +26,7 @@ Once installed go into settings and enter the ip address for your TP-Link Smartp
 ## Settings Explained
 
 - **Device**
-  - The ip and port of domoticz server.
+  - The ip and port of Domoticz server.
 - **Index**
   - Index number reprensenting the switch to control.
 - **Icon**
@@ -34,9 +34,9 @@ Once installed go into settings and enter the ip address for your TP-Link Smartp
 - **Label**
   - Title attribute on icon that shows on mouseover.
 - **Username**
-  - Username to connect to web interface.  Currently not configurable in Domoticz, use the default username admin.
+  - Username used to connect to web interface. If authentication is not configured on your Domoticz server leave this blank.
 - **Password**
-  - Password configured for Web Admin Portal of Domoticz device.
+  - Password used to connect to web interface. If authentication is not configured on your Domoticz server leave this blank.
 - **Warn**
   - The left checkbox will always warn when checked.
   - The right checkbox will only warn when printer is printing.
