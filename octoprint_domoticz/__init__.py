@@ -129,6 +129,12 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 		else:
 			self._domoticz_logger.debug(response)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(currentState="unknown",ip=plugip,idx=plugidx))
+			
+	def gcode_turn_off(self, plug):
+		if plug["warnPrinting"] and self._printer.is_printing():
+			self._domoticz_logger.debug("Not powering off %s since new print has started." % plug["label"])
+		else:
+			self.turn_off(plug["ip"],plug["idx"],plug["username"],plug["password"])
 		
 	def check_status(self, plugip, plugidx, username="", password=""):
 		self._domoticz_logger.debug("Checking status of %s index %s." % (plugip, plugidx))
@@ -207,14 +213,30 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 							self._domoticz_logger.debug("Received M80 command, attempting power on of %s index %s." % (plugip,plugidx))
 							return
 						elif cmd.startswith("M81"):
-							t = threading.Timer(int(plug["gcodeOffDelay"]),self.turn_off, [plug["ip"],plug["idx"]],{'username': plug["username"],'password': plug["password"]})
+							t = threading.Timer(int(plug["gcodeOffDelay"]),self.gcode_turn_off, [plug])
 							t.start()
 							self._domoticz_logger.debug("Received M81 command, attempting power off of %s index %s." % (plugip,plugidx))
 							return
 						else:
 							return
+		elif cmd.startswith("@DOMOTICZ") and cmd.count(" ") == 1:
+			plugidx = cmd.split()[1]
+			for plug in self._settings.get(["arrSmartplugs"]):
+				if plug["idx"] == plugidx and plug["gcodeEnabled"]:
+					if cmd.startswith("@DOMOTICZON"):
+						t = threading.Timer(int(plug["gcodeOnDelay"]),self.turn_on, [plug["ip"],plug["idx"]],{'username': plug["username"],'password': plug["password"]})
+						t.start()
+						self._domoticz_logger.debug("Received @DOMOTICZON command, attempting power on of %s index %s." % (plug["ip"],plugidx))
+						return
+					elif cmd.startswith("@DOMOTICZOFF"):
+						t = threading.Timer(int(plug["gcodeOffDelay"]),self.gcode_turn_off, [plug])
+						t.start()
+						self._domoticz_logger.debug("Received @DOMOTICZOFF command, attempting power off of %s index %s." % (plug["ip"],plugidx))
+						return
+					else:
+						return
 			return
-			
+
 
 	##~~ Softwareupdate hook
 
