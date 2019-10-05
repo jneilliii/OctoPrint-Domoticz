@@ -9,7 +9,7 @@ import time
 import logging
 import os
 import re
-import urllib2
+import requests
 import threading
 import base64
 
@@ -94,7 +94,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			strURL = "http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=On"
 			if username != "":
 				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
-			webresponse = urllib2.urlopen(strURL).read()
+			webresponse = requests.get(strURL)
 			response = json.loads(webresponse)
 			chk = response["status"]
 		except:			
@@ -115,7 +115,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			strURL = "http://" + plugip + "/json.htm?type=command&param=switchlight&idx=" + str(plugidx) + "&switchcmd=Off"
 			if username != "":
 				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
-			webresponse = urllib2.urlopen(strURL).read()
+			webresponse = requests.get(strURL)
 			response = json.loads(webresponse)
 			chk = response["status"]
 		except:
@@ -143,7 +143,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 				strURL = "http://" + plugip + "/json.htm?type=devices&rid=" + str(plugidx)
 				if username != "":
 					strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))				
-				webresponse = urllib2.urlopen(strURL).read()
+				webresponse = requests.get(strURL)
 				self._domoticz_logger.debug("%s index %s response: %s" % (plugip, plugidx, webresponse))
 				response = json.loads(webresponse)
 				chk = response["result"][0]["Status"]
@@ -241,9 +241,6 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 	##~~ Softwareupdate hook
 
 	def get_update_information(self):
-		# Define the configuration for your plugin to use with the Software Update
-		# Plugin here. See https://github.com/foosel/OctoPrint/wiki/Plugin:-Software-Update
-		# for details.
 		return dict(
 			domoticz=dict(
 				displayName="OctoPrint-Domoticz",
@@ -260,11 +257,8 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			)
 		)
 
-
-# If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
-# ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
-# can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
 __plugin_name__ = "Domoticz"
+__plugin_pythoncompat__ = ">=2.7,<4"
 
 def __plugin_load__():
 	global __plugin_implementation__
