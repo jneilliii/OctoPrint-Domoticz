@@ -4,7 +4,6 @@ from __future__ import absolute_import
 import octoprint.plugin
 from octoprint.server import user_permission
 import socket
-import json
 import time
 import logging
 import os
@@ -95,7 +94,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			if username != "":
 				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
 			webresponse = requests.get(strURL)
-			response = json.loads(webresponse)
+			response = webresponse.json()
 			chk = response["status"]
 		except:			
 			self._domoticz_logger.error('Invalid ip or unknown error connecting to %s.' % plugip, exc_info=True)
@@ -116,7 +115,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 			if username != "":
 				strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))
 			webresponse = requests.get(strURL)
-			response = json.loads(webresponse)
+			response = webresponse.json()
 			chk = response["status"]
 		except:
 			self._domoticz_logger.error('Invalid ip or unknown error connecting to %s.' % plugip, exc_info=True)
@@ -145,7 +144,7 @@ class domoticzPlugin(octoprint.plugin.SettingsPlugin,
 					strURL = strURL + "&username=" + base64.b64encode(bytes(username)) + "&password=" + base64.b64encode(bytes(password))				
 				webresponse = requests.get(strURL)
 				self._domoticz_logger.debug("%s index %s response: %s" % (plugip, plugidx, webresponse))
-				response = json.loads(webresponse)
+				response = webresponse.json()
 				chk = response["result"][0]["Status"]
 			except:
 				self._domoticz_logger.error('Invalid ip or unknown error connecting to %s.' % plugip, exc_info=True)
