@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2020-03-27
+### Fixed
+- Moved system commands and printer connection logic to server-side processing.
+
 ## [0.1.1] - 2019-10-22
 ### Fixed
 - Issues introduced in last release that prevented the plugin from working.
