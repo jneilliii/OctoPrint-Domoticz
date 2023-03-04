@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import base64
 import logging
 import os
 import threading
@@ -111,11 +110,11 @@ class domoticzPlugin(
 			)
 		if current == 3:
 			# add new properties to configured switches
-			arrSmartplugs_new = []
+			arr_smart_plugs_new = []
 			for plug in self._settings.get(['arrSmartplugs']):
 				plug["passcode"] = ""
-				arrSmartplugs_new.append(plug)
-			self._settings.set(["arrSmartplugs"], arrSmartplugs_new)
+				arr_smart_plugs_new.append(plug)
+			self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
 
 	##~~ AssetPlugin mixin
 
@@ -132,49 +131,27 @@ class domoticzPlugin(
 
 	##~~ SimpleApiPlugin mixin
 
-	def turn_on(self, plugip, plugidx, username="", password="", passcode=""):
+	def turn_on(self, plug_ip, plug_idx, username="", password="", passcode=""):
 		if self._settings.get(["singleRelay"]):
-			plugidx = ""
-		self._domoticz_logger.debug("Turning on %s index %s." % (plugip, plugidx))
-		plug = self.plug_search(
-			self._settings.get(["arrSmartplugs"]), "ip", plugip, "idx", plugidx
-		)
+			plug_idx = ""
+		self._domoticz_logger.debug(f"Turning on {plug_ip} index {plug_idx}.")
+		plug = self.plug_search(self._settings.get(["arrSmartplugs"]), "ip", plug_ip, "idx", plug_idx)
 		try:
-			strURL = (
-					"http://"
-					+ plugip
-					+ "/json.htm?type=command&param=switchlight&idx="
-					+ str(plugidx)
-					+ "&switchcmd=On"
-			)
-			if username != "":
-				strURL = (
-						strURL
-						+ "&username="
-						+ octoprint.util.to_native_str(
-					base64.b64encode(octoprint.util.to_bytes(username))
-				)
-						+ "&password="
-						+ octoprint.util.to_native_str(
-					base64.b64encode(octoprint.util.to_bytes(password))
-				)
-				)
+			str_url = f"http://{plug_ip}/json.htm?type=command&param=switchlight&idx={plug_idx}&switchcmd=On"
 			if passcode != "":
-				strURL = (
-						strURL
-						+ "&passcode={}".format(passcode)
-				)
-			webresponse = requests.get(strURL)
-			response = webresponse.json()
+				str_url = f"{str_url}&passcode={passcode}"
+			if username != "":
+				web_response = requests.get(str_url, auth=(username, password), timeout=10)
+			else:
+				web_response = requests.get(str_url, timeout=10)
+			response = web_response.json()
 			chk = response["status"]
 		except Exception:
-			self._domoticz_logger.error(
-				"Invalid ip or unknown error connecting to %s." % plugip, exc_info=True
-			)
-			response = "Unknown error turning on %s index %s." % (plugip, plugidx)
+			self._domoticz_logger.error(f"Invalid ip or unknown error connecting to {plug_ip}.", exc_info=True)
+			response = f"Unknown error turning on {plug_ip} index {plug_idx}."
 			chk = "UNKNOWN"
 
-		self._domoticz_logger.debug("Response: %s" % response)
+		self._domoticz_logger.debug(f"Response: {response}")
 		if chk == "OK":
 			if plug["autoConnect"] and self._printer.is_closed_or_error():
 				c = threading.Timer(int(plug["autoConnectDelay"]), self._printer.connect)
@@ -185,135 +162,93 @@ class domoticzPlugin(
 				)
 				t.start()
 			self._plugin_manager.send_plugin_message(
-				self._identifier, {"currentState": "on", "ip": plugip, "idx": plugidx}
+				self._identifier, {"currentState": "on", "ip": plug_ip, "idx": plug_idx}
 			)
 		else:
 			self._domoticz_logger.debug(response)
 			self._plugin_manager.send_plugin_message(
 				self._identifier,
-				{"currentState": "unknown", "ip": plugip, "idx": plugidx},
+				{"currentState": "unknown", "ip": plug_ip, "idx": plug_idx},
 			)
 
-	def turn_off(self, plugip, plugidx, username="", password="", passcode=""):
-		self._domoticz_logger.debug("Turning off %s index %s." % (plugip, plugidx))
-		plug = self.plug_search(
-			self._settings.get(["arrSmartplugs"]), "ip", plugip, "idx", plugidx
-		)
+	def turn_off(self, plug_ip, plug_idx, username="", password="", passcode=""):
+		self._domoticz_logger.debug(f"Turning off {plug_ip} index {plug_idx}.")
+		plug = self.plug_search(self._settings.get(["arrSmartplugs"]), "ip", plug_ip, "idx", plug_idx)
 		try:
 			if plug["sysCmdOff"]:
-				self._domoticz_logger.debug(
-					"Running system command: %s in %s"
-					% (plug["sysRunCmdOff"], plug["sysCmdOffDelay"])
-				)
-				t = threading.Timer(
-					int(plug["sysCmdOffDelay"]), os.system, args=[plug["sysRunCmdOff"]]
-				)
+				self._domoticz_logger.debug(f'Running system command: {plug["sysRunCmdOff"]} in {plug["sysCmdOffDelay"]}')
+				t = threading.Timer(int(plug["sysCmdOffDelay"]), os.system, args=[plug["sysRunCmdOff"]])
 				t.start()
 
 			if plug["autoDisconnect"]:
-				self._domoticz_logger.debug("Disconnnecting from printer")
+				self._domoticz_logger.debug("Disconnecting from printer")
 				self._printer.disconnect()
 				time.sleep(int(plug["autoDisconnectDelay"]))
-			strURL = (
-					"http://"
-					+ plugip
-					+ "/json.htm?type=command&param=switchlight&idx="
-					+ str(plugidx)
-					+ "&switchcmd=Off"
-			)
-			if username != "":
-				strURL = (
-						strURL
-						+ "&username="
-						+ octoprint.util.to_native_str(
-					base64.b64encode(octoprint.util.to_bytes(username))
-				)
-						+ "&password="
-						+ octoprint.util.to_native_str(
-					base64.b64encode(octoprint.util.to_bytes(password))
-				)
-				)
+			str_url = f"http://{plug_ip}/json.htm?type=command&param=switchlight&idx={plug_idx}&switchcmd=Off"
 			if passcode != "":
-				strURL = (
-						strURL
-						+ "&passcode={}".format(passcode)
-				)
-			webresponse = requests.get(strURL)
-			response = webresponse.json()
+				str_url = f"{str_url}&passcode={passcode}"
+			if username != "":
+				web_response = requests.get(str_url, auth=(username, password), timeout=10)
+			else:
+				web_response = requests.get(str_url, timeout=10)
+			response = web_response.json()
 			chk = response["status"]
 		except Exception:
-			self._domoticz_logger.error(
-				"Invalid ip or unknown error connecting to %s." % plugip, exc_info=True
-			)
-			response = "Unknown error turning off %s index %s." % (plugip, plugidx)
+			self._domoticz_logger.error(f"Invalid ip or unknown error connecting to {plug_ip}.", exc_info=True)
+			response = f"Unknown error turning off {plug_ip} index {plug_idx}."
 			chk = "UNKNOWN"
 
 		self._domoticz_logger.debug("Response: %s" % response)
 		if chk == "OK":
 			self._plugin_manager.send_plugin_message(
-				self._identifier, {"currentState": "off", "ip": plugip, "idx": plugidx}
+				self._identifier, {"currentState": "off", "ip": plug_ip, "idx": plug_idx}
 			)
 		else:
 			self._domoticz_logger.debug(response)
 			self._plugin_manager.send_plugin_message(
 				self._identifier,
-				{"currentState": "unknown", "ip": plugip, "idx": plugidx},
+				{"currentState": "unknown", "ip": plug_ip, "idx": plug_idx},
 			)
 
 	def gcode_turn_off(self, plug):
 		if plug["warnPrinting"] and self._printer.is_printing():
-			self._domoticz_logger.debug(
-				"Not powering off %s since new print has started." % plug["label"]
-			)
+			self._domoticz_logger.debug(f"Not powering off {plug['label']} since new print has started.")
 		else:
-			self.turn_off(plug["ip"], plug["idx"], username=plug["username"], password=plug["password"], passcode=plug["passcode"])
+			self.turn_off(plug["ip"], plug["idx"], username=plug["username"], password=plug["password"],
+						  passcode=plug["passcode"])
 
-	def check_status(self, plugip, plugidx, username="", password=""):
-		self._domoticz_logger.debug("Checking status of %s index %s." % (plugip, plugidx))
-		if plugip != "":
+	def check_status(self, plug_ip, plug_idx, username="", password=""):
+		self._domoticz_logger.debug(f"Checking status of {plug_ip} index {plug_idx}.")
+		if plug_ip != "":
 			try:
-				strURL = "http://" + plugip + "/json.htm?type=devices&rid=" + str(plugidx)
+				str_url = f"http://{plug_ip}/json.htm?type=devices&rid={plug_idx}"
 				if username != "":
-					strURL = (
-							strURL
-							+ "&username="
-							+ octoprint.util.to_native_str(
-						base64.b64encode(octoprint.util.to_bytes(username))
-					)
-							+ "&password="
-							+ octoprint.util.to_native_str(
-						base64.b64encode(octoprint.util.to_bytes(password))
-					)
-					)
-				webresponse = requests.get(strURL)
-				self._domoticz_logger.debug(
-					"%s index %s response: %s" % (plugip, plugidx, webresponse)
-				)
-				response = webresponse.json()
+					web_response = requests.get(str_url, auth=(username, password), timeout=10)
+				else:
+					web_response = requests.get(str_url, timeout=10)
+				self._domoticz_logger.debug(f"{plug_ip} index {plug_idx} response: {web_response}")
+				response = web_response.json()
 				chk = response["result"][0]["Status"]
 			except Exception:
-				self._domoticz_logger.error(
-					"Invalid ip or unknown error connecting to %s." % plugip,
-					exc_info=True,
-				)
-				response = "unknown error with %s." % plugip
+				self._domoticz_logger.error(f"Invalid ip or unknown error connecting to {plug_ip}.", exc_info=True)
+				response = f"unknown error with {plug_ip}."
 				chk = "UNKNOWN"
 
-			self._domoticz_logger.debug("%s index %s is %s" % (plugip, plugidx, chk))
+			self._domoticz_logger.debug(f"{plug_ip} index {plug_idx} is {chk}")
 			if chk == "On":
 				self._plugin_manager.send_plugin_message(
-					self._identifier, {"currentState": "on", "ip": plugip, "idx": plugidx}
+					self._identifier, {"currentState": "on", "ip": plug_ip, "idx": plug_idx}
 				)
 			elif chk == "Off":
 				self._plugin_manager.send_plugin_message(
 					self._identifier,
-					{"currentState": "off", "ip": plugip, "idx": plugidx},
+					{"currentState": "off", "ip": plug_ip, "idx": plug_idx},
 				)
 			else:
 				self._domoticz_logger.debug(response)
 				self._plugin_manager.send_plugin_message(
 					self._identifier,
-					{"currentState": "unknown", "ip": plugip, "idx": plugidx},
+					{"currentState": "unknown", "ip": plug_ip, "idx": plug_idx},
 				)
 
 	def get_api_commands(self):
@@ -387,7 +322,7 @@ class domoticzPlugin(
 
 	##~~ Gcode processing hook
 
-	def processGCODE(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
+	def process_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if gcode:
 			if cmd.startswith("M8") and cmd.count(" ") >= 2:
 				plugip = cmd.split()[1]
@@ -465,8 +400,8 @@ class domoticzPlugin(
 			return self.lookup(dic.get(key, {}), *keys)
 		return dic.get(key)
 
-	def plug_search(self, list, key1, value1, key2, value2):
-		for item in list:
+	def plug_search(self, search_list, key1, value1, key2, value2):
+		for item in search_list:
 			if item[key1] == value1 and item[key2] == value2:
 				return item
 
@@ -520,7 +455,7 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
-		"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.processGCODE,
+		"octoprint.comm.protocol.gcode.queuing": __plugin_implementation__.process_gcode,
 		"octoprint.access.permissions": __plugin_implementation__.get_additional_permissions,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information,
 	}
