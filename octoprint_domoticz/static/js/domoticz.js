@@ -61,6 +61,7 @@ $(function() {
 							   'btnColor':ko.observable('#808080'),
 							   'username':ko.observable(''),
 							   'password':ko.observable(''),
+							   'passcode':ko.observable(''),
 							   'icon':ko.observable('icon-bolt'),
 							   'label':ko.observable('')});
 			self.settings.settings.plugins.domoticz.arrSmartplugs.push(self.selectedPlug());
@@ -143,7 +144,8 @@ $(function() {
 					ip: data.ip(),
 					idx: data.idx(),
 					username: data.username(),
-					password: data.password()
+					password: data.password(),
+                    passcode: data.passcode()
 				}),
 				contentType: "application/json; charset=UTF-8"
 			});
@@ -157,7 +159,7 @@ $(function() {
 				$("#DomoticzWarning").modal("hide");
 				self.sendTurnOff(data);
 			}
-		}; 
+		};
 
 		self.sendTurnOff = function(data) {
 			$.ajax({
@@ -169,7 +171,8 @@ $(function() {
 					ip: data.ip(),
 					idx: data.idx(),
 					username: data.username(),
-					password: data.password()
+					password: data.password(),
+                    passcode: data.passcode()
 			}),
 			contentType: "application/json; charset=UTF-8"
 			});
@@ -191,7 +194,7 @@ $(function() {
 			}).done(function(){
 				self.settings.saveData();
 				});
-		}; 
+		};
 
 		self.disconnectPrinter = function() {
 			$.ajax({
