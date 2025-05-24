@@ -304,7 +304,6 @@ class domoticzPlugin(
             "checkStatus": ["ip", "idx"],
             "connectPrinter": [],
             "disconnectPrinter": [],
-            "sysCommand": ["cmd"],
         }
 
     def on_api_command(self, command, data):
@@ -359,11 +358,6 @@ class domoticzPlugin(
         elif command == "disconnectPrinter":
             self._domoticz_logger.debug("Disconnecting printer.")
             self._printer.disconnect()
-        elif command == "sysCommand":
-            self._domoticz_logger.debug(
-                "Running system command %s." % "{cmd}".format(**data)
-            )
-            os.system("{cmd}".format(**data))
 
     ##~~ Gcode processing hook
 
