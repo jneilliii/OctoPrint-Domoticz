@@ -220,19 +220,6 @@ $(function() {
 			});
 		}
 
-		self.sysCommand = function(sysCmd) {
-			$.ajax({
-				url: API_BASEURL + "plugin/domoticz",
-				type: "POST",
-				dataType: "json",
-				data: JSON.stringify({
-					command: "sysCommand",
-					cmd: sysCmd
-				}),
-				contentType: "application/json; charset=UTF-8"
-			});
-		}
-
 		self.checkStatuses = function() {
 			ko.utils.arrayForEach(self.settings.settings.plugins.domoticz.arrSmartplugs(),function(item){
 				if(item.ip() !== "") {
