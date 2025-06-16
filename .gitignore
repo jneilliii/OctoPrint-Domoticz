@@ -1,6 +1,6 @@
 *.pyc
 *.swp
-.idea
+*.idea
 *.iml
 build
 dist
