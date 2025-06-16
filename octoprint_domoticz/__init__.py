@@ -100,7 +100,7 @@ class domoticzPlugin(
                                 self._domoticz_logger.setLevel(logging.INFO)
 
         def get_settings_version(self):
-                return 4
+                return 5
 
         def on_settings_migrate(self, target, current=None):
                 if current is None or current < 3:
@@ -114,6 +114,13 @@ class domoticzPlugin(
                         arr_smart_plugs_new = []
                         for plug in self._settings.get(['arrSmartplugs']):
                                 plug["passcode"] = ""
+                                arr_smart_plugs_new.append(plug)
+                        self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
+                if current < 4 and current > 2:
+                        # add new properties to configured switches
+                        arr_smart_plugs_new = []
+                        for plug in self._settings.get(['arrSmartplugs']):
+                                plug["ip"] = "http://" + plug["ip"]
                                 arr_smart_plugs_new.append(plug)
                         self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
 
