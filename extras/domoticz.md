@@ -52,8 +52,8 @@ Once installed go into settings and enter the connection details for your Domoti
 
 ## Settings Explained
 
-- **IP:PORT**
-  - The ip and port of Domoticz server.
+- **HTTP(S)://IP:PORT**
+  - The transport, ip and port of Domoticz server.
 - **Index**
   - Index number reprensenting the switch to control.
 - **Icon**
@@ -79,6 +79,8 @@ Once installed go into settings and enter the connection details for your Domoti
   - When checked will run system command configured in **System Command On** setting after a delay in seconds configured in **System Command On Delay**.
 - **Cmd Off**
   - When checked will run system command configured in **System Command Off** setting after a delay in seconds configured in **System Command Off Delay**.
+- **Self-Signed SSL**
+  - When checked the web call will ignore Self-Signed Certificate issues to Domoticz API.
   
 ## Get Help
 

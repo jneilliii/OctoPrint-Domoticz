@@ -43,6 +43,7 @@ $(function() {
 			self.selectedPlug({'ip':ko.observable(''),
 							   'idx':ko.observable('1'),
 							   'displayWarning':ko.observable(true),
+							   'ignoreSSL':ko.observable(false),
 							   'warnPrinting':ko.observable(false),
 							   'gcodeEnabled':ko.observable(false),
 							   'gcodeOnDelay':ko.observable(0),
