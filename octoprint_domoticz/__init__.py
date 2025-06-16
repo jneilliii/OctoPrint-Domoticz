@@ -485,7 +485,7 @@ class domoticzPlugin(
 
 
 __plugin_name__ = "Domoticz"
-__plugin_pythoncompat__ = ">=2.7,<4"
+__plugin_pythoncompat__ = ">=3.11,<4"
 
 
 def __plugin_load__():
