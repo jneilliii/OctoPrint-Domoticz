@@ -286,6 +286,14 @@ class domoticzPlugin(
                         from flask import make_response
                         return make_response("Insufficient rights", 403)
 
+                # Find the plug config to get ignoreSSL
+                plug = self.plug_search(
+                        self._settings.get(["arrSmartplugs"]),
+                        "ip", data.get("ip", ""),
+                        "idx", data.get("idx", "")
+                )
+                ignoreSSL = plug["ignoreSSL"] if plug and "ignoreSSL" in plug else False
+
                 if command == "turnOn":
                         if "username" in data and data["username"] != "":
                                 self._domoticz_logger.debug(
@@ -294,12 +302,18 @@ class domoticzPlugin(
                                 self.turn_on(
                                         "{ip}".format(**data),
                                         "{idx}".format(**data),
+                                        ignoreSSL,
                                         username="{username}".format(**data),
                                         password="{password}".format(**data),
                                         passcode="{passcode}".format(**data)
                                 )
                         else:
-                                self.turn_on("{ip}".format(**data), "{idx}".format(**data), passcode="{passcode}".format(**data))
+                                self.turn_on(
+                                        "{ip}".format(**data),
+                                        "{idx}".format(**data),
+                                        ignoreSSL,
+                                        passcode="{passcode}".format(**data)
+                                )
                 elif command == "turnOff":
                         if "username" in data and data["username"] != "":
                                 self._domoticz_logger.debug(
@@ -308,12 +322,18 @@ class domoticzPlugin(
                                 self.turn_off(
                                         "{ip}".format(**data),
                                         "{idx}".format(**data),
+                                        ignoreSSL,
                                         username="{username}".format(**data),
                                         password="{password}".format(**data),
                                         passcode="{passcode}".format(**data)
                                 )
                         else:
-                                self.turn_off("{ip}".format(**data), "{idx}".format(**data), passcode="{passcode}".format(**data))
+                                self.turn_off(
+                                        "{ip}".format(**data),
+                                        "{idx}".format(**data),
+                                        ignoreSSL,
+                                        passcode="{passcode}".format(**data)
+                                )
                 elif command == "checkStatus":
                         if "username" in data and data["username"] != "":
                                 self._domoticz_logger.debug(
@@ -322,11 +342,16 @@ class domoticzPlugin(
                                 self.check_status(
                                         "{ip}".format(**data),
                                         "{idx}".format(**data),
+                                        ignoreSSL,
                                         username="{username}".format(**data),
                                         password="{password}".format(**data),
                                 )
                         else:
-                                self.check_status("{ip}".format(**data), "{idx}".format(**data))
+                                self.check_status(
+                                        "{ip}".format(**data),
+                                        "{idx}".format(**data),
+                                        ignoreSSL
+                                )
                 elif command == "connectPrinter":
                         self._domoticz_logger.debug("Connecting printer.")
                         self._printer.connect()
