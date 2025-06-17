@@ -121,7 +121,7 @@ class domoticzPlugin(
                         arr_smart_plugs_new = []
                         for plug in self._settings.get(['arrSmartplugs']):
                                 plug["ip"] = "http://" + plug["ip"]
-				plug["ignoreSSL"] = False
+                                plug["ignoreSSL"] = False
                                 arr_smart_plugs_new.append(plug)
                         self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
 
