@@ -116,11 +116,12 @@ class domoticzPlugin(
                                 plug["passcode"] = ""
                                 arr_smart_plugs_new.append(plug)
                         self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
-                if current < 4 and current > 2:
+                if current < 5 and current > 2:
                         # add new properties to configured switches
                         arr_smart_plugs_new = []
                         for plug in self._settings.get(['arrSmartplugs']):
                                 plug["ip"] = "http://" + plug["ip"]
+				plug["ignoreSSL"] = False
                                 arr_smart_plugs_new.append(plug)
                         self._settings.set(["arrSmartplugs"], arr_smart_plugs_new)
 
@@ -492,7 +493,7 @@ class domoticzPlugin(
 
 
 __plugin_name__ = "Domoticz"
-__plugin_pythoncompat__ = ">=3.11,<4"
+__plugin_pythoncompat__ = ">=3.7,<4"
 
 
 def __plugin_load__():
