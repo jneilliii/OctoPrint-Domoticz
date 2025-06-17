@@ -17,6 +17,7 @@
 				<i class="icon" data-bind="css: {'icon-check': warnPrinting(),'icon-check-empty': !warnPrinting()}" title="Warn While Printing" />
 				<i class="icon" data-bind="css: {'icon-check': autoConnect(),'icon-check-empty': !autoConnect()}" title="Auto Connect" />
 				<i class="icon" data-bind="css: {'icon-check': autoDisconnect(),'icon-check-empty': !autoDisconnect()}" title="Auto Disconnect" />
+				<i class="icon" data-bind="css: {'icon-check': ignoreSSL(),'icon-check-empty': !ignoreSSL()}" title="SSL Check Disabled" />				
 				<i class="icon" data-bind="css: {'icon-check': gcodeEnabled(),'icon-check-empty': !gcodeEnabled()}" title="GCODE Trigger" />
 				<i class="icon" data-bind="css: {'icon-check': sysCmdOn(),'icon-check-empty': !sysCmdOn()}" title="Run System Command On" />
 				<i class="icon" data-bind="css: {'icon-check': sysCmdOff(),'icon-check-empty': !sysCmdOff()}" title="Run System Command Off" />
@@ -47,7 +48,7 @@
 	<div class="modal-body">
 		<table class="table table-condensed">
 			<tr>
-				<td><div class="controls"><label class="control-label">{{ _('IP:PORT') }}</label><input type="text" class="input-block-level" data-bind="value: ip" /></div></td>
+				<td><div class="controls"><label class="control-label">{{ _('HTTP(S)://IP:PORT') }}</label><input type="text" class="input-block-level" data-bind="value: ip" /></div></td>
 				<td><div class="controls"><label class="control-label">{{ _('Index') }}</label><input type="text" class="input-block-level" data-bind="value: idx" /></div></td>
 				<td><div class="controls"><label class="control-label">{{ _('Label') }}</label><input type="text" class="input input-small" data-bind="value: label" /></div></td>
 			</tr>
@@ -64,6 +65,7 @@
 			<tr>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" data-bind="checked: autoConnect"/> Auto Connect</label><input type="text" data-bind="value: autoConnectDelay,visible: autoConnect" class="input input-small" /></div></td>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" data-bind="checked: autoDisconnect"/> Auto Disconnect</label><input type="text" data-bind="value: autoDisconnectDelay,visible: autoDisconnect" class="input input-small" /></div></td>
+				<td><div class="controls"><label class="checkbox"><input type="checkbox" data-bind="checked: ignoreSSL"/> Self-Signed SSL</label></div></td>
 			</tr>
 			<tr>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" data-bind="checked: gcodeEnabled"/> GCODE Trigger</label></div></td>
