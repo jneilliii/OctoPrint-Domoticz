@@ -235,7 +235,7 @@ class domoticzPlugin(
                 if plug["warnPrinting"] and self._printer.is_printing():
                         self._domoticz_logger.debug(f"Not powering off {plug['label']} since new print has started.")
                 else:
-                        self.turn_off(plug["ip"], plug["idx"], username=plug["username"], password=plug["password"],
+                        self.turn_off(plug["ip"], plug["idx"], plug["ignoreSSL"], username=plug["username"], password=plug["password"],
                                                   passcode=plug["passcode"])
 
         def check_status(self, plug_ip, plug_idx, ignoreSSL, username="", password=""):
@@ -370,7 +370,7 @@ class domoticzPlugin(
         ##~~ Gcode processing hook
 
         def process_gcode(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-                if gcode:
+                if gcode in ["M80", "M81"]:
                         if cmd.startswith("M8") and cmd.count(" ") >= 2:
                                 plugip = cmd.split()[1]
                                 plugidx = cmd.split()[2]
@@ -384,7 +384,7 @@ class domoticzPlugin(
                                                         t = threading.Timer(
                                                                 int(plug["gcodeOnDelay"]),
                                                                 self.turn_on,
-                                                                [plug["ip"], plug["idx"]],
+                                                                [plug["ip"], plug["idx"], plug["ignoreSSL"]],
                                                                 {
                                                                         "username": plug["username"],
                                                                         "password": plug["password"],
