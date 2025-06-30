@@ -72,14 +72,13 @@
 			</tr>
 			<tr data-bind="visible: gcodeEnabled">
 				<td colspan="2">
-                    <span class="label" title="Use this gcode command to power on relay." data-bind="text: $root.gcodeOnString($data),visible: gcodeEnabled"></span>
-                    <button type="button" class="btn btn-mini" data-bind="click: function() { copyTextToClipboard($root.gcodeOnString($data)); }">Copy All</button>
-                </td>
-            </tr>
+					<span class="control-text" title="Use this gcode command to power on relay." data-bind="text: $root.gcodeOnString($data),visible: gcodeEnabled"></span>
+					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOnString($data)); }"><i class="fas fa-copy"></i></a>
+			</tr>
             <tr data-bind="visible: gcodeEnabled">
 				<td colspan="2">
                     <span class="label" title="Use this gcode command to power off relay." data-bind="text: $root.gcodeOffString($data),visible: gcodeEnabled"></span>
-                    <button type="button" class="btn btn-mini" data-bind="click: function() { copyTextToClipboard($root.gcodeOffString($data)); }">Copy All</button>
+					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOnString($data)); }"><i class="fas fa-copy"></i></a>
                 </td>
             </tr>
 			<tr data-bind="visible: gcodeEnabled">
@@ -101,17 +100,3 @@
 		<a href="#" class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Close') }}</a>
 	</div>
 </div>
-<script type="text/javascript">
-    function copyTextToClipboard(text) {
-        if (navigator.clipboard) {
-            navigator.clipboard.writeText(text);
-        } else {
-            var textarea = document.createElement("textarea");
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-        }
-    }
-</script>
