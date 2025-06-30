@@ -72,11 +72,13 @@
 			</tr>
 			<tr data-bind="visible: gcodeEnabled">
 				<td colspan="2">
+					<span class="control">On: </span>
 					<span class="label" title="Use this gcode command to power on relay." data-bind="text: $root.gcodeOnString($data),visible: gcodeEnabled"></span>
 					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOnString($data)); }"><i class="fas fa-copy"></i></a>
 			</tr>
             <tr data-bind="visible: gcodeEnabled">
 				<td colspan="2">
+					<span class="control">Off: </span>
                     <span class="label" title="Use this gcode command to power off relay." data-bind="text: $root.gcodeOffString($data),visible: gcodeEnabled"></span>
 					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOffString($data)); }"><i class="fas fa-copy"></i></a>
                 </td>
