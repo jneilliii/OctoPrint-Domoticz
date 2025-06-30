@@ -69,9 +69,20 @@
 			</tr>
 			<tr>
 				<td><div class="controls"><label class="checkbox"><input type="checkbox" data-bind="checked: gcodeEnabled"/> GCODE Trigger</label></div></td>
-				<td><span class="label" title="Use this gcode command to power on relay." data-bind="text: $root.gcodeOnString($data),visible: gcodeEnabled"></span></td>
-				<td><span class="label" title="Use this gcode command to power off relay." data-bind="text: $root.gcodeOffString($data),visible: gcodeEnabled"></span></td>
 			</tr>
+			<tr data-bind="visible: gcodeEnabled">
+				<td colspan="2">
+					<span class="control">On: </span>
+					<span class="label" title="Use this gcode command to power on relay." data-bind="text: $root.gcodeOnString($data),visible: gcodeEnabled"></span>
+					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOnString($data)); }"><i class="fas fa-copy"></i></a>
+			</tr>
+            <tr data-bind="visible: gcodeEnabled">
+				<td colspan="2">
+					<span class="control">Off: </span>
+                    <span class="label" title="Use this gcode command to power off relay." data-bind="text: $root.gcodeOffString($data),visible: gcodeEnabled"></span>
+					<a href="javascript:void(0)" title="Copy GCode to Clipboard" class="control-text" data-bind="click: function() { copyToClipboard($root.gcodeOffString($data)); }"><i class="fas fa-copy"></i></a>
+                </td>
+            </tr>
 			<tr data-bind="visible: gcodeEnabled">
 				<td><div class="controls"><label class="control-label">{{ _('GCODE On Delay') }}</label><input type="text" data-bind="value: gcodeOnDelay" class="input input-small" /></div></td>
 				<td><div class="controls"><label class="control-label">{{ _('GCODE Off Delay') }}</label><input type="text" data-bind="value: gcodeOffDelay" class="input input-small" /></div></td>
